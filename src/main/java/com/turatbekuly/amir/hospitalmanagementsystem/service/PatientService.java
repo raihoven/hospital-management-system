@@ -1,13 +1,23 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.service;
 
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.PatientDto;
 import jakarta.validation.Valid;
 
-import java.util.List;
-
 public interface PatientService {
 
-    List<PatientDto> getAllPatients(String firstName, String lastName, String illness);
+    PagedResponseDto<PatientDto> getAllPatients(
+            String search,
+            String firstName,
+            String lastName,
+            String illness,
+            Integer minAge,
+            Integer maxAge,
+            int page,
+            int size,
+            String sortBy,
+            String sortDir
+    );
 
     PatientDto createPatient(@Valid PatientDto patientDto);
 

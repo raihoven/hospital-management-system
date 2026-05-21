@@ -1,21 +1,28 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.service.impl;
 
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.PatientDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.entity.Patient;
 import com.turatbekuly.amir.hospitalmanagementsystem.exception.PatientNotFoundException;
 import com.turatbekuly.amir.hospitalmanagementsystem.repository.PatientRepository;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.PatientService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 @Validated
 public class PatientServiceImpl implements PatientService {
+
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "firstName", "lastName", "age", "illness");
 
     private final PatientRepository patientRepository;
 
@@ -24,11 +31,36 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<PatientDto> getAllPatients(String firstName, String lastName, String illness) {
-        return patientRepository.findAll(buildPatientSpecification(firstName, lastName, illness))
-                .stream()
-                .map(this::toDto)
-                .toList();
+    public PagedResponseDto<PatientDto> getAllPatients(
+            String search,
+            String firstName,
+            String lastName,
+            String illness,
+            Integer minAge,
+            Integer maxAge,
+            int page,
+            int size,
+            String sortBy,
+            String sortDir
+    ) {
+        Pageable pageable = PageRequest.of(
+                normalizePage(page),
+                normalizeSize(size),
+                buildSort(sortBy, sortDir)
+        );
+
+        Page<PatientDto> patientPage = patientRepository
+                .findAll(buildPatientSpecification(search, firstName, lastName, illness, minAge, maxAge), pageable)
+                .map(this::toDto);
+
+        return new PagedResponseDto<>(
+                patientPage.getContent(),
+                patientPage.getNumber(),
+                patientPage.getSize(),
+                patientPage.getTotalElements(),
+                patientPage.getTotalPages(),
+                patientPage.isLast()
+        );
     }
 
     @Override
@@ -68,8 +100,26 @@ public class PatientServiceImpl implements PatientService {
         return true;
     }
 
-    private Specification<Patient> buildPatientSpecification(String firstName, String lastName, String illness) {
+    private Specification<Patient> buildPatientSpecification(
+            String search,
+            String firstName,
+            String lastName,
+            String illness,
+            Integer minAge,
+            Integer maxAge
+    ) {
         Specification<Patient> specification = Specification.where(null);
+
+        if (StringUtils.hasText(search)) {
+            String normalizedSearch = "%" + search.trim().toLowerCase() + "%";
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.or(
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), normalizedSearch),
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), normalizedSearch),
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("illness")), normalizedSearch)
+                    )
+            );
+        }
 
         if (StringUtils.hasText(firstName)) {
             String normalizedFirstName = "%" + firstName.trim().toLowerCase() + "%";
@@ -92,7 +142,36 @@ public class PatientServiceImpl implements PatientService {
             );
         }
 
+        if (minAge != null) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("age"), minAge)
+            );
+        }
+
+        if (maxAge != null) {
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.lessThanOrEqualTo(root.get("age"), maxAge)
+            );
+        }
+
         return specification;
+    }
+
+    private Sort buildSort(String sortBy, String sortDir) {
+        String normalizedSortBy = ALLOWED_SORT_FIELDS.contains(sortBy) ? sortBy : "id";
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        return Sort.by(direction, normalizedSortBy);
+    }
+
+    private int normalizePage(int page) {
+        return Math.max(page, 0);
+    }
+
+    private int normalizeSize(int size) {
+        if (size <= 0) {
+            return 10;
+        }
+        return Math.min(size, 100);
     }
 
     private PatientDto toDto(Patient patient) {

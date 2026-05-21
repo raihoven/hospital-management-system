@@ -1,12 +1,11 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.controller;
 
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.PatientDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/patients")
@@ -20,12 +19,19 @@ public class PatientController {
     }
 
     @GetMapping
-    public List<PatientDto> getAllPatients(
+    public PagedResponseDto<PatientDto> getAllPatients(
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
-            @RequestParam(required = false) String illness
+            @RequestParam(required = false) String illness,
+            @RequestParam(required = false) Integer minAge,
+            @RequestParam(required = false) Integer maxAge,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
     ) {
-        return patientService.getAllPatients(firstName, lastName, illness);
+        return patientService.getAllPatients(search, firstName, lastName, illness, minAge, maxAge, page, size, sortBy, sortDir);
     }
 
     @PostMapping
