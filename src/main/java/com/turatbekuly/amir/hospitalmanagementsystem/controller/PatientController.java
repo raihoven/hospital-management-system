@@ -3,6 +3,9 @@ package com.turatbekuly.amir.hospitalmanagementsystem.controller;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.PatientDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.PatientService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/patients")
 @CrossOrigin(origins = "*")
+@Tag(name = "Patients", description = "Patient CRUD, search, filtering, sorting and pagination")
+@SecurityRequirement(name = "bearerAuth")
 public class PatientController {
 
     private final PatientService patientService;
@@ -19,6 +24,7 @@ public class PatientController {
     }
 
     @GetMapping
+    @Operation(summary = "Get patients", description = "Returns paginated patients with search, filtering and sorting support")
     public PagedResponseDto<PatientDto> getAllPatients(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String firstName,
@@ -35,21 +41,25 @@ public class PatientController {
     }
 
     @PostMapping
+    @Operation(summary = "Create patient", description = "Creates a new patient. Requires ADMIN role")
     public PatientDto createPatient(@Valid @RequestBody PatientDto patientDto) {
         return patientService.createPatient(patientDto);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get patient by ID", description = "Returns one patient by identifier")
     public ResponseEntity<PatientDto> getPatientById(@PathVariable Long id) {
         return ResponseEntity.ok(patientService.getPatientById(id));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update patient", description = "Updates patient fields by identifier. Requires ADMIN role")
     public ResponseEntity<PatientDto> updatePatient(@PathVariable Long id, @Valid @RequestBody PatientDto patientDto) {
         return ResponseEntity.ok(patientService.updatePatient(id, patientDto));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete patient", description = "Deletes patient by identifier. Requires ADMIN role")
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
         if (!patientService.deletePatient(id)) {
             return ResponseEntity.notFound().build();
