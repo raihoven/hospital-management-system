@@ -27,9 +27,9 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(PatientNotFoundException.class)
+    @ExceptionHandler(TuratbekulyAmirPatientNotFoundException.class)
     public ResponseEntity<TuratbekulyAmirApiErrorResponse> handlePatientNotFound(
-            PatientNotFoundException exception,
+            TuratbekulyAmirPatientNotFoundException exception,
             HttpServletRequest request
     ) {
         log.warn("Patient not found: path={} message={}", request.getRequestURI(), exception.getMessage());

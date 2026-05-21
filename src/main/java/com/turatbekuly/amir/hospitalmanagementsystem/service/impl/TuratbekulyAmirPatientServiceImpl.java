@@ -1,12 +1,12 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.service.impl;
 
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
-import com.turatbekuly.amir.hospitalmanagementsystem.dto.PatientDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPatientDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.entity.Patient;
-import com.turatbekuly.amir.hospitalmanagementsystem.exception.PatientNotFoundException;
+import com.turatbekuly.amir.hospitalmanagementsystem.exception.TuratbekulyAmirPatientNotFoundException;
 import com.turatbekuly.amir.hospitalmanagementsystem.mapper.TuratbekulyAmirEntityMapper;
-import com.turatbekuly.amir.hospitalmanagementsystem.repository.PatientRepository;
-import com.turatbekuly.amir.hospitalmanagementsystem.service.PatientService;
+import com.turatbekuly.amir.hospitalmanagementsystem.repository.TuratbekulyAmirPatientRepository;
+import com.turatbekuly.amir.hospitalmanagementsystem.service.TuratbekulyAmirPatientService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,21 +23,24 @@ import java.util.Set;
 
 @Service
 @Validated
-public class PatientServiceImpl implements PatientService {
+public class TuratbekulyAmirPatientServiceImpl implements TuratbekulyAmirPatientService {
 
-    private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(TuratbekulyAmirPatientServiceImpl.class);
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "firstName", "lastName", "age", "illness");
 
-    private final PatientRepository patientRepository;
+    private final TuratbekulyAmirPatientRepository patientRepository;
     private final TuratbekulyAmirEntityMapper entityMapper;
 
-    public PatientServiceImpl(PatientRepository patientRepository, TuratbekulyAmirEntityMapper entityMapper) {
+    public TuratbekulyAmirPatientServiceImpl(
+            TuratbekulyAmirPatientRepository patientRepository,
+            TuratbekulyAmirEntityMapper entityMapper
+    ) {
         this.patientRepository = patientRepository;
         this.entityMapper = entityMapper;
     }
 
     @Override
-    public PagedResponseDto<PatientDto> getAllPatients(
+    public PagedResponseDto<TuratbekulyAmirPatientDto> getAllPatients(
             String search,
             String firstName,
             String lastName,
@@ -60,7 +63,7 @@ public class PatientServiceImpl implements PatientService {
                 buildSort(sortBy, sortDir)
         );
 
-        Page<PatientDto> patientPage = patientRepository
+        Page<TuratbekulyAmirPatientDto> patientPage = patientRepository
                 .findAll(buildPatientSpecification(search, firstName, lastName, illness, minAge, maxAge), pageable)
                 .map(entityMapper::toPatientDto);
 
@@ -77,24 +80,24 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public PatientDto createPatient(@Valid PatientDto patientDto) {
+    public TuratbekulyAmirPatientDto createPatient(@Valid TuratbekulyAmirPatientDto patientDto) {
         Patient savedPatient = patientRepository.save(entityMapper.toPatientEntity(patientDto));
         log.info("Created patient id={} firstName='{}' lastName='{}'", savedPatient.getId(), savedPatient.getFirstName(), savedPatient.getLastName());
         return entityMapper.toPatientDto(savedPatient);
     }
 
     @Override
-    public PatientDto getPatientById(Long id) {
+    public TuratbekulyAmirPatientDto getPatientById(Long id) {
         Patient patient = patientRepository.findById(id)
-                .orElseThrow(() -> new PatientNotFoundException(id));
+                .orElseThrow(() -> new TuratbekulyAmirPatientNotFoundException(id));
         log.info("Fetched patient by id={}", id);
         return entityMapper.toPatientDto(patient);
     }
 
     @Override
-    public PatientDto updatePatient(Long id, @Valid PatientDto patientDto) {
+    public TuratbekulyAmirPatientDto updatePatient(Long id, @Valid TuratbekulyAmirPatientDto patientDto) {
         Patient patient = patientRepository.findById(id)
-                .orElseThrow(() -> new PatientNotFoundException(id));
+                .orElseThrow(() -> new TuratbekulyAmirPatientNotFoundException(id));
 
         patient.setFirstName(patientDto.firstName());
         patient.setLastName(patientDto.lastName());
@@ -107,15 +110,14 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public boolean deletePatient(Long id) {
+    public void deletePatient(Long id) {
         if (!patientRepository.existsById(id)) {
             log.warn("Attempted to delete non-existing patient id={}", id);
-            return false;
+            throw new TuratbekulyAmirPatientNotFoundException(id);
         }
 
         patientRepository.deleteById(id);
         log.info("Deleted patient id={}", id);
-        return true;
     }
 
     private Specification<Patient> buildPatientSpecification(
@@ -191,5 +193,4 @@ public class PatientServiceImpl implements PatientService {
         }
         return Math.min(size, 100);
     }
-
 }

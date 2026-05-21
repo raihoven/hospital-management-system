@@ -8,7 +8,7 @@ import com.turatbekuly.amir.hospitalmanagementsystem.entity.Patient;
 import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirFileResource;
 import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirRole;
 import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirUser;
-import com.turatbekuly.amir.hospitalmanagementsystem.repository.PatientRepository;
+import com.turatbekuly.amir.hospitalmanagementsystem.repository.TuratbekulyAmirPatientRepository;
 import com.turatbekuly.amir.hospitalmanagementsystem.repository.TuratbekulyAmirFileResourceRepository;
 import com.turatbekuly.amir.hospitalmanagementsystem.repository.TuratbekulyAmirUserRepository;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.TuratbekulyAmirAsyncService;
@@ -31,14 +31,14 @@ import java.util.concurrent.CompletableFuture;
 public class TuratbekulyAmirAsyncServiceImpl implements TuratbekulyAmirAsyncService {
 
     private static final Logger log = LoggerFactory.getLogger(TuratbekulyAmirAsyncServiceImpl.class);
-    private final PatientRepository patientRepository;
+    private final TuratbekulyAmirPatientRepository patientRepository;
     private final TuratbekulyAmirUserRepository userRepository;
     private final TuratbekulyAmirFileResourceRepository fileResourceRepository;
     private final TuratbekulyAmirAsyncService asyncServiceProxy;
     private final String storagePath;
 
     public TuratbekulyAmirAsyncServiceImpl(
-            PatientRepository patientRepository,
+            TuratbekulyAmirPatientRepository patientRepository,
             TuratbekulyAmirUserRepository userRepository,
             TuratbekulyAmirFileResourceRepository fileResourceRepository,
             @Lazy TuratbekulyAmirAsyncService asyncServiceProxy,
