@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: turatbekuly-amir-hospital-postgres
+    environment:
+      POSTGRES_DB: hospital_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "1234:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hospital_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: turatbekuly-amir-hospital-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/hospital_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      APP_JWT_SECRET: ZHVtbXktc3VwZXItc2VjdXJlLWp3dC1rZXktZm9yLWhvc3BpdGFsLW1hbmFnZW1lbnQtc3lzdGVtLTEyMw==
+      APP_JWT_EXPIRATION: 86400000
+      APP_FILE_STORAGE_PATH: /application/uploads
+      JAVA_OPTS: -Xms256m -Xmx512m
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - app_uploads:/application/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+  app_uploads:

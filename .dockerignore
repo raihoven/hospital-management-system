@@ -1,0 +1,7 @@
+.git
+.idea
+target
+uploads
+*.log
+http-client.env.json
+.mvn/wrapper/maven-wrapper.jar

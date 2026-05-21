@@ -50,7 +50,7 @@ public class TuratbekulyAmirSecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/error", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/error", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/actuator/health/**", "/actuator/info").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/async/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/files/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/files/**").hasRole("ADMIN")
