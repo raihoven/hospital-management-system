@@ -2,6 +2,7 @@ package com.turatbekuly.amir.hospitalmanagementsystem.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -21,6 +22,7 @@ public class Patient {
     @Column(nullable = false)
     private String lastName;
 
+    @Positive(message = "Возраст должен быть больше 0")
     private int age;
 
     private String illness;

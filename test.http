@@ -3,10 +3,10 @@ POST http://localhost:8080/api/patients
 Content-Type: application/json
 
 {
-  "firstName": "Эльдар",
-  "lastName": "Муратулы",
-  "age": 21,
-  "illness": "Зрение"
+  "firstName": "Адильжан",
+  "lastName": "Абдамбаев",
+  "age": 20,
+  "illness": "Болит нога"
 }
 
 GET http://localhost:8080/api/patients
