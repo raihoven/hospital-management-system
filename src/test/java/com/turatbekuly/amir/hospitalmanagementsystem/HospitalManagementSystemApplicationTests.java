@@ -8,7 +8,7 @@ class HospitalManagementSystemApplicationTests {
 
     @Test
     void applicationClassIsPresent() {
-        assertThat(TuratbekulyAmirHospitalApplication.class.getPackageName())
+        assertThat(AmirAdilzhanAishaHospitalApplication.class.getPackageName())
                 .isEqualTo("com.turatbekuly.amir.hospitalmanagementsystem");
     }
 

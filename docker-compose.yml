@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: turatbekuly-amir-hospital-postgres
+    container_name: amir-adilzhan-aisha-hospital-postgres
     environment:
       POSTGRES_DB: hospital_db
       POSTGRES_USER: postgres
@@ -27,7 +27,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: turatbekuly-amir-hospital-app
+    container_name: amir-adilzhan-aisha-hospital-app
     depends_on:
       postgres:
         condition: service_healthy
