@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "departments")
-public class Department {
+public class TuratbekulyAmirDepartment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,13 +24,13 @@ public class Department {
     @Column(length = 500)
     private String description;
 
-    @OneToMany(mappedBy = "department")
-    private List<Doctor> doctors = new ArrayList<>();
+    @OneToMany(mappedBy = "TuratbekulyAmirDepartment")
+    private List<TuratbekulyAmirDoctor> doctors = new ArrayList<>();
 
-    public Department() {
+    public TuratbekulyAmirDepartment() {
     }
 
-    public Department(String name, String description) {
+    public TuratbekulyAmirDepartment(String name, String description) {
         this.name = name;
         this.description = description;
     }
@@ -59,11 +59,11 @@ public class Department {
         this.description = description;
     }
 
-    public List<Doctor> getDoctors() {
+    public List<TuratbekulyAmirDoctor> getDoctors() {
         return doctors;
     }
 
-    public void setDoctors(List<Doctor> doctors) {
+    public void setDoctors(List<TuratbekulyAmirDoctor> doctors) {
         this.doctors = doctors;
     }
 }

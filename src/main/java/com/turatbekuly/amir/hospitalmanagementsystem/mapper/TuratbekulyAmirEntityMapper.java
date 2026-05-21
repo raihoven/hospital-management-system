@@ -7,76 +7,76 @@ import org.springframework.stereotype.Component;
 @Component
 public class TuratbekulyAmirEntityMapper {
 
-    public TuratbekulyAmirPatientDto toPatientDto(Patient patient) {
+    public TuratbekulyAmirPatientDto toPatientDto(TuratbekulyAmirPatient TuratbekulyAmirPatient) {
         return new TuratbekulyAmirPatientDto(
-                patient.getId(),
-                patient.getFirstName(),
-                patient.getLastName(),
-                patient.getAge(),
-                patient.getIllness()
+                TuratbekulyAmirPatient.getId(),
+                TuratbekulyAmirPatient.getFirstName(),
+                TuratbekulyAmirPatient.getLastName(),
+                TuratbekulyAmirPatient.getAge(),
+                TuratbekulyAmirPatient.getIllness()
         );
     }
 
-    public Patient toPatientEntity(TuratbekulyAmirPatientDto patientDto) {
-        Patient patient = new Patient();
-        patient.setFirstName(patientDto.firstName());
-        patient.setLastName(patientDto.lastName());
-        patient.setAge(patientDto.age());
-        patient.setIllness(patientDto.illness());
-        return patient;
+    public TuratbekulyAmirPatient toPatientEntity(TuratbekulyAmirPatientDto patientDto) {
+        TuratbekulyAmirPatient TuratbekulyAmirPatient = new TuratbekulyAmirPatient();
+        TuratbekulyAmirPatient.setFirstName(patientDto.firstName());
+        TuratbekulyAmirPatient.setLastName(patientDto.lastName());
+        TuratbekulyAmirPatient.setAge(patientDto.age());
+        TuratbekulyAmirPatient.setIllness(patientDto.illness());
+        return TuratbekulyAmirPatient;
     }
 
-    public DepartmentDto toDepartmentDto(Department department) {
-        return new DepartmentDto(
-                department.getId(),
-                department.getName(),
-                department.getDescription()
+    public TuratbekulyAmirDepartmentDto toDepartmentDto(TuratbekulyAmirDepartment TuratbekulyAmirDepartment) {
+        return new TuratbekulyAmirDepartmentDto(
+                TuratbekulyAmirDepartment.getId(),
+                TuratbekulyAmirDepartment.getName(),
+                TuratbekulyAmirDepartment.getDescription()
         );
     }
 
-    public DoctorDto toDoctorDto(Doctor doctor) {
-        return new DoctorDto(
-                doctor.getId(),
-                doctor.getFirstName(),
-                doctor.getLastName(),
-                doctor.getSpecialization(),
-                doctor.getEmail(),
-                doctor.getDepartment() != null ? doctor.getDepartment().getId() : null,
-                doctor.getDepartment() != null ? doctor.getDepartment().getName() : null
+    public TuratbekulyAmirDoctorDto toDoctorDto(TuratbekulyAmirDoctor TuratbekulyAmirDoctor) {
+        return new TuratbekulyAmirDoctorDto(
+                TuratbekulyAmirDoctor.getId(),
+                TuratbekulyAmirDoctor.getFirstName(),
+                TuratbekulyAmirDoctor.getLastName(),
+                TuratbekulyAmirDoctor.getSpecialization(),
+                TuratbekulyAmirDoctor.getEmail(),
+                TuratbekulyAmirDoctor.getDepartment() != null ? TuratbekulyAmirDoctor.getDepartment().getId() : null,
+                TuratbekulyAmirDoctor.getDepartment() != null ? TuratbekulyAmirDoctor.getDepartment().getName() : null
         );
     }
 
-    public AppointmentDto toAppointmentDto(Appointment appointment) {
-        return new AppointmentDto(
-                appointment.getId(),
-                appointment.getAppointmentDateTime(),
-                appointment.getStatus(),
-                appointment.getNotes(),
-                appointment.getPatient() != null ? appointment.getPatient().getId() : null,
-                appointment.getDoctor() != null ? appointment.getDoctor().getId() : null
+    public TuratbekulyAmirAppointmentDto toAppointmentDto(TuratbekulyAmirAppointment TuratbekulyAmirAppointment) {
+        return new TuratbekulyAmirAppointmentDto(
+                TuratbekulyAmirAppointment.getId(),
+                TuratbekulyAmirAppointment.getAppointmentDateTime(),
+                TuratbekulyAmirAppointment.getStatus(),
+                TuratbekulyAmirAppointment.getNotes(),
+                TuratbekulyAmirAppointment.getPatient() != null ? TuratbekulyAmirAppointment.getPatient().getId() : null,
+                TuratbekulyAmirAppointment.getDoctor() != null ? TuratbekulyAmirAppointment.getDoctor().getId() : null
         );
     }
 
-    public MedicalRecordDto toMedicalRecordDto(MedicalRecord medicalRecord) {
-        return new MedicalRecordDto(
-                medicalRecord.getId(),
-                medicalRecord.getDiagnosis(),
-                medicalRecord.getTreatmentPlan(),
-                medicalRecord.getCreatedAt(),
-                medicalRecord.getPatient() != null ? medicalRecord.getPatient().getId() : null,
-                medicalRecord.getDoctor() != null ? medicalRecord.getDoctor().getId() : null
+    public TuratbekulyAmirMedicalRecordDto toMedicalRecordDto(TuratbekulyAmirMedicalRecord TuratbekulyAmirMedicalRecord) {
+        return new TuratbekulyAmirMedicalRecordDto(
+                TuratbekulyAmirMedicalRecord.getId(),
+                TuratbekulyAmirMedicalRecord.getDiagnosis(),
+                TuratbekulyAmirMedicalRecord.getTreatmentPlan(),
+                TuratbekulyAmirMedicalRecord.getCreatedAt(),
+                TuratbekulyAmirMedicalRecord.getPatient() != null ? TuratbekulyAmirMedicalRecord.getPatient().getId() : null,
+                TuratbekulyAmirMedicalRecord.getDoctor() != null ? TuratbekulyAmirMedicalRecord.getDoctor().getId() : null
         );
     }
 
-    public PrescriptionDto toPrescriptionDto(Prescription prescription) {
-        return new PrescriptionDto(
-                prescription.getId(),
-                prescription.getMedicationName(),
-                prescription.getDosage(),
-                prescription.getInstructions(),
-                prescription.getIssuedDate(),
-                prescription.getPatient() != null ? prescription.getPatient().getId() : null,
-                prescription.getDoctor() != null ? prescription.getDoctor().getId() : null
+    public TuratbekulyAmirPrescriptionDto toPrescriptionDto(TuratbekulyAmirPrescription TuratbekulyAmirPrescription) {
+        return new TuratbekulyAmirPrescriptionDto(
+                TuratbekulyAmirPrescription.getId(),
+                TuratbekulyAmirPrescription.getMedicationName(),
+                TuratbekulyAmirPrescription.getDosage(),
+                TuratbekulyAmirPrescription.getInstructions(),
+                TuratbekulyAmirPrescription.getIssuedDate(),
+                TuratbekulyAmirPrescription.getPatient() != null ? TuratbekulyAmirPrescription.getPatient().getId() : null,
+                TuratbekulyAmirPrescription.getDoctor() != null ? TuratbekulyAmirPrescription.getDoctor().getId() : null
         );
     }
 

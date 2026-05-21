@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "prescriptions")
-public class Prescription {
+public class TuratbekulyAmirPrescription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,22 +35,22 @@ public class Prescription {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
+    private TuratbekulyAmirPatient TuratbekulyAmirPatient;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
+    private TuratbekulyAmirDoctor TuratbekulyAmirDoctor;
 
-    public Prescription() {
+    public TuratbekulyAmirPrescription() {
     }
 
-    public Prescription(String medicationName, String dosage, String instructions, LocalDate issuedDate, Patient patient, Doctor doctor) {
+    public TuratbekulyAmirPrescription(String medicationName, String dosage, String instructions, LocalDate issuedDate, TuratbekulyAmirPatient TuratbekulyAmirPatient, TuratbekulyAmirDoctor TuratbekulyAmirDoctor) {
         this.medicationName = medicationName;
         this.dosage = dosage;
         this.instructions = instructions;
         this.issuedDate = issuedDate;
-        this.patient = patient;
-        this.doctor = doctor;
+        this.TuratbekulyAmirPatient = TuratbekulyAmirPatient;
+        this.TuratbekulyAmirDoctor = TuratbekulyAmirDoctor;
     }
 
     @PrePersist
@@ -100,19 +100,19 @@ public class Prescription {
         this.issuedDate = issuedDate;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public TuratbekulyAmirPatient getPatient() {
+        return TuratbekulyAmirPatient;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setPatient(TuratbekulyAmirPatient TuratbekulyAmirPatient) {
+        this.TuratbekulyAmirPatient = TuratbekulyAmirPatient;
     }
 
-    public Doctor getDoctor() {
-        return doctor;
+    public TuratbekulyAmirDoctor getDoctor() {
+        return TuratbekulyAmirDoctor;
     }
 
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
+    public void setDoctor(TuratbekulyAmirDoctor TuratbekulyAmirDoctor) {
+        this.TuratbekulyAmirDoctor = TuratbekulyAmirDoctor;
     }
 }

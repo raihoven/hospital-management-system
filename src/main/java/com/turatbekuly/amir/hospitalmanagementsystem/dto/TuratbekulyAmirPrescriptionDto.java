@@ -2,7 +2,7 @@ package com.turatbekuly.amir.hospitalmanagementsystem.dto;
 
 import java.time.LocalDate;
 
-public record PrescriptionDto(
+public record TuratbekulyAmirPrescriptionDto(
         Long id,
         String medicationName,
         String dosage,

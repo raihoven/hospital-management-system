@@ -1,8 +1,8 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.service.impl;
 
-import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPatientDto;
-import com.turatbekuly.amir.hospitalmanagementsystem.entity.Patient;
+import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirPatient;
 import com.turatbekuly.amir.hospitalmanagementsystem.exception.TuratbekulyAmirPatientNotFoundException;
 import com.turatbekuly.amir.hospitalmanagementsystem.mapper.TuratbekulyAmirEntityMapper;
 import com.turatbekuly.amir.hospitalmanagementsystem.repository.TuratbekulyAmirPatientRepository;
@@ -41,14 +41,14 @@ class TuratbekulyAmirPatientServiceImplTest {
 
     @Test
     void getAllPatientsNormalizesPaginationSortAndReturnsMappedPage() {
-        Patient patient = patient(1L, "Amir", "Turatbekuly", 24, "flu");
+        TuratbekulyAmirPatient TuratbekulyAmirPatient = TuratbekulyAmirPatient(1L, "Amir", "Turatbekuly", 24, "flu");
         TuratbekulyAmirPatientDto dto = new TuratbekulyAmirPatientDto(1L, "Amir", "Turatbekuly", 24, "flu");
 
         when(patientRepository.findAll(anySpecification(), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(patient)));
-        when(entityMapper.toPatientDto(patient)).thenReturn(dto);
+                .thenReturn(new PageImpl<>(List.of(TuratbekulyAmirPatient)));
+        when(entityMapper.toPatientDto(TuratbekulyAmirPatient)).thenReturn(dto);
 
-        PagedResponseDto<TuratbekulyAmirPatientDto> response = patientService.getAllPatients(
+        TuratbekulyAmirPagedResponseDto<TuratbekulyAmirPatientDto> response = patientService.getAllPatients(
                 "tur", "am", "tur", "flu", 18, 70, -4, 500, "age", "desc"
         );
 
@@ -75,9 +75,9 @@ class TuratbekulyAmirPatientServiceImplTest {
 
     @Test
     void updatePatientChangesExistingEntity() {
-        Patient existing = patient(7L, "Old", "Name", 30, "cold");
-        TuratbekulyAmirPatientDto request = new TuratbekulyAmirPatientDto(null, "New", "Patient", 31, "healthy");
-        TuratbekulyAmirPatientDto response = new TuratbekulyAmirPatientDto(7L, "New", "Patient", 31, "healthy");
+        TuratbekulyAmirPatient existing = TuratbekulyAmirPatient(7L, "Old", "Name", 30, "cold");
+        TuratbekulyAmirPatientDto request = new TuratbekulyAmirPatientDto(null, "New", "TuratbekulyAmirPatient", 31, "healthy");
+        TuratbekulyAmirPatientDto response = new TuratbekulyAmirPatientDto(7L, "New", "TuratbekulyAmirPatient", 31, "healthy");
 
         when(patientRepository.findById(7L)).thenReturn(Optional.of(existing));
         when(patientRepository.save(existing)).thenReturn(existing);
@@ -86,7 +86,7 @@ class TuratbekulyAmirPatientServiceImplTest {
         TuratbekulyAmirPatientDto updated = patientService.updatePatient(7L, request);
 
         assertThat(existing.getFirstName()).isEqualTo("New");
-        assertThat(existing.getLastName()).isEqualTo("Patient");
+        assertThat(existing.getLastName()).isEqualTo("TuratbekulyAmirPatient");
         assertThat(existing.getAge()).isEqualTo(31);
         assertThat(existing.getIllness()).isEqualTo("healthy");
         assertThat(updated).isEqualTo(response);
@@ -111,13 +111,13 @@ class TuratbekulyAmirPatientServiceImplTest {
     }
 
     @SuppressWarnings("unchecked")
-    private Specification<Patient> anySpecification() {
+    private Specification<TuratbekulyAmirPatient> anySpecification() {
         return any(Specification.class);
     }
 
-    private Patient patient(Long id, String firstName, String lastName, int age, String illness) {
-        Patient patient = new Patient(firstName, lastName, age, illness);
-        patient.setId(id);
-        return patient;
+    private TuratbekulyAmirPatient TuratbekulyAmirPatient(Long id, String firstName, String lastName, int age, String illness) {
+        TuratbekulyAmirPatient TuratbekulyAmirPatient = new TuratbekulyAmirPatient(firstName, lastName, age, illness);
+        TuratbekulyAmirPatient.setId(id);
+        return TuratbekulyAmirPatient;
     }
 }

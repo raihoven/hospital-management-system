@@ -1,6 +1,6 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.controller;
 
-import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPatientDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.TuratbekulyAmirPatientService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/patients")
 @CrossOrigin(origins = "*")
-@Tag(name = "Patients", description = "Patient CRUD, search, filtering, sorting and pagination")
+@Tag(name = "Patients", description = "TuratbekulyAmirPatient CRUD, search, filtering, sorting and pagination")
 @SecurityRequirement(name = "bearerAuth")
 public class TuratbekulyAmirPatientController {
 
@@ -34,7 +34,7 @@ public class TuratbekulyAmirPatientController {
 
     @GetMapping
     @Operation(summary = "Get patients", description = "Returns paginated patients with search, filtering and sorting support")
-    public PagedResponseDto<TuratbekulyAmirPatientDto> getAllPatients(
+    public TuratbekulyAmirPagedResponseDto<TuratbekulyAmirPatientDto> getAllPatients(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
@@ -50,19 +50,19 @@ public class TuratbekulyAmirPatientController {
     }
 
     @PostMapping
-    @Operation(summary = "Create patient", description = "Creates a new patient. Requires ADMIN role")
+    @Operation(summary = "Create TuratbekulyAmirPatient", description = "Creates a new TuratbekulyAmirPatient. Requires ADMIN role")
     public TuratbekulyAmirPatientDto createPatient(@Valid @RequestBody TuratbekulyAmirPatientDto patientDto) {
         return patientService.createPatient(patientDto);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get patient by ID", description = "Returns one patient by identifier")
+    @Operation(summary = "Get TuratbekulyAmirPatient by ID", description = "Returns one TuratbekulyAmirPatient by identifier")
     public ResponseEntity<TuratbekulyAmirPatientDto> getPatientById(@PathVariable Long id) {
         return ResponseEntity.ok(patientService.getPatientById(id));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update patient", description = "Updates patient fields by identifier. Requires ADMIN role")
+    @Operation(summary = "Update TuratbekulyAmirPatient", description = "Updates TuratbekulyAmirPatient fields by identifier. Requires ADMIN role")
     public ResponseEntity<TuratbekulyAmirPatientDto> updatePatient(
             @PathVariable Long id,
             @Valid @RequestBody TuratbekulyAmirPatientDto patientDto
@@ -71,7 +71,7 @@ public class TuratbekulyAmirPatientController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete patient", description = "Deletes patient by identifier. Requires ADMIN role")
+    @Operation(summary = "Delete TuratbekulyAmirPatient", description = "Deletes TuratbekulyAmirPatient by identifier. Requires ADMIN role")
     public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id);
         return ResponseEntity.noContent().build();

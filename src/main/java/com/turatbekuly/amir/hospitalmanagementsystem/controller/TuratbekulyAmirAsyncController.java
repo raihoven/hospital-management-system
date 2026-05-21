@@ -27,7 +27,7 @@ public class TuratbekulyAmirAsyncController {
     }
 
     @GetMapping("/patient-analytics")
-    @Operation(summary = "Generate patient analytics", description = "Runs asynchronous patient analytics. Requires ADMIN role")
+    @Operation(summary = "Generate TuratbekulyAmirPatient analytics", description = "Runs asynchronous TuratbekulyAmirPatient analytics. Requires ADMIN role")
     public CompletableFuture<ResponseEntity<TuratbekulyAmirPatientAnalyticsDto>> getPatientAnalytics() {
         return asyncService.generatePatientAnalytics()
                 .thenApply(ResponseEntity::ok);

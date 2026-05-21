@@ -1,6 +1,6 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.entity;
 
-public enum AppointmentStatus {
+public enum TuratbekulyAmirAppointmentStatus {
     SCHEDULED,
     COMPLETED,
     CANCELLED

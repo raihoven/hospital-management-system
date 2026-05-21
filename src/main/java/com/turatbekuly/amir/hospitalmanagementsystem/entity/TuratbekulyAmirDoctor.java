@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "doctors")
-public class Doctor {
+public class TuratbekulyAmirDoctor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,26 +37,26 @@ public class Doctor {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id", nullable = false)
-    private Department department;
+    private TuratbekulyAmirDepartment TuratbekulyAmirDepartment;
 
-    @OneToMany(mappedBy = "doctor")
-    private List<Appointment> appointments = new ArrayList<>();
+    @OneToMany(mappedBy = "TuratbekulyAmirDoctor")
+    private List<TuratbekulyAmirAppointment> appointments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "doctor")
-    private List<MedicalRecord> medicalRecords = new ArrayList<>();
+    @OneToMany(mappedBy = "TuratbekulyAmirDoctor")
+    private List<TuratbekulyAmirMedicalRecord> medicalRecords = new ArrayList<>();
 
-    @OneToMany(mappedBy = "doctor")
-    private List<Prescription> prescriptions = new ArrayList<>();
+    @OneToMany(mappedBy = "TuratbekulyAmirDoctor")
+    private List<TuratbekulyAmirPrescription> prescriptions = new ArrayList<>();
 
-    public Doctor() {
+    public TuratbekulyAmirDoctor() {
     }
 
-    public Doctor(String firstName, String lastName, String specialization, String email, Department department) {
+    public TuratbekulyAmirDoctor(String firstName, String lastName, String specialization, String email, TuratbekulyAmirDepartment TuratbekulyAmirDepartment) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.specialization = specialization;
         this.email = email;
-        this.department = department;
+        this.TuratbekulyAmirDepartment = TuratbekulyAmirDepartment;
     }
 
     public Long getId() {
@@ -99,35 +99,35 @@ public class Doctor {
         this.email = email;
     }
 
-    public Department getDepartment() {
-        return department;
+    public TuratbekulyAmirDepartment getDepartment() {
+        return TuratbekulyAmirDepartment;
     }
 
-    public void setDepartment(Department department) {
-        this.department = department;
+    public void setDepartment(TuratbekulyAmirDepartment TuratbekulyAmirDepartment) {
+        this.TuratbekulyAmirDepartment = TuratbekulyAmirDepartment;
     }
 
-    public List<Appointment> getAppointments() {
+    public List<TuratbekulyAmirAppointment> getAppointments() {
         return appointments;
     }
 
-    public void setAppointments(List<Appointment> appointments) {
+    public void setAppointments(List<TuratbekulyAmirAppointment> appointments) {
         this.appointments = appointments;
     }
 
-    public List<MedicalRecord> getMedicalRecords() {
+    public List<TuratbekulyAmirMedicalRecord> getMedicalRecords() {
         return medicalRecords;
     }
 
-    public void setMedicalRecords(List<MedicalRecord> medicalRecords) {
+    public void setMedicalRecords(List<TuratbekulyAmirMedicalRecord> medicalRecords) {
         this.medicalRecords = medicalRecords;
     }
 
-    public List<Prescription> getPrescriptions() {
+    public List<TuratbekulyAmirPrescription> getPrescriptions() {
         return prescriptions;
     }
 
-    public void setPrescriptions(List<Prescription> prescriptions) {
+    public void setPrescriptions(List<TuratbekulyAmirPrescription> prescriptions) {
         this.prescriptions = prescriptions;
     }
 }

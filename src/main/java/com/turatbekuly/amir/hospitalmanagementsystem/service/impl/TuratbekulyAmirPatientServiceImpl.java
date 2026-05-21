@@ -1,8 +1,8 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.service.impl;
 
-import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPatientDto;
-import com.turatbekuly.amir.hospitalmanagementsystem.entity.Patient;
+import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirPatient;
 import com.turatbekuly.amir.hospitalmanagementsystem.exception.TuratbekulyAmirPatientNotFoundException;
 import com.turatbekuly.amir.hospitalmanagementsystem.mapper.TuratbekulyAmirEntityMapper;
 import com.turatbekuly.amir.hospitalmanagementsystem.repository.TuratbekulyAmirPatientRepository;
@@ -40,7 +40,7 @@ public class TuratbekulyAmirPatientServiceImpl implements TuratbekulyAmirPatient
     }
 
     @Override
-    public PagedResponseDto<TuratbekulyAmirPatientDto> getAllPatients(
+    public TuratbekulyAmirPagedResponseDto<TuratbekulyAmirPatientDto> getAllPatients(
             String search,
             String firstName,
             String lastName,
@@ -67,9 +67,9 @@ public class TuratbekulyAmirPatientServiceImpl implements TuratbekulyAmirPatient
                 .findAll(buildPatientSpecification(search, firstName, lastName, illness, minAge, maxAge), pageable)
                 .map(entityMapper::toPatientDto);
 
-        log.info("Fetched patient page {} with {} elements out of total {}", patientPage.getNumber(), patientPage.getNumberOfElements(), patientPage.getTotalElements());
+        log.info("Fetched TuratbekulyAmirPatient page {} with {} elements out of total {}", patientPage.getNumber(), patientPage.getNumberOfElements(), patientPage.getTotalElements());
 
-        return new PagedResponseDto<>(
+        return new TuratbekulyAmirPagedResponseDto<>(
                 patientPage.getContent(),
                 patientPage.getNumber(),
                 patientPage.getSize(),
@@ -81,46 +81,46 @@ public class TuratbekulyAmirPatientServiceImpl implements TuratbekulyAmirPatient
 
     @Override
     public TuratbekulyAmirPatientDto createPatient(@Valid TuratbekulyAmirPatientDto patientDto) {
-        Patient savedPatient = patientRepository.save(entityMapper.toPatientEntity(patientDto));
-        log.info("Created patient id={} firstName='{}' lastName='{}'", savedPatient.getId(), savedPatient.getFirstName(), savedPatient.getLastName());
+        TuratbekulyAmirPatient savedPatient = patientRepository.save(entityMapper.toPatientEntity(patientDto));
+        log.info("Created TuratbekulyAmirPatient id={} firstName='{}' lastName='{}'", savedPatient.getId(), savedPatient.getFirstName(), savedPatient.getLastName());
         return entityMapper.toPatientDto(savedPatient);
     }
 
     @Override
     public TuratbekulyAmirPatientDto getPatientById(Long id) {
-        Patient patient = patientRepository.findById(id)
+        TuratbekulyAmirPatient TuratbekulyAmirPatient = patientRepository.findById(id)
                 .orElseThrow(() -> new TuratbekulyAmirPatientNotFoundException(id));
-        log.info("Fetched patient by id={}", id);
-        return entityMapper.toPatientDto(patient);
+        log.info("Fetched TuratbekulyAmirPatient by id={}", id);
+        return entityMapper.toPatientDto(TuratbekulyAmirPatient);
     }
 
     @Override
     public TuratbekulyAmirPatientDto updatePatient(Long id, @Valid TuratbekulyAmirPatientDto patientDto) {
-        Patient patient = patientRepository.findById(id)
+        TuratbekulyAmirPatient TuratbekulyAmirPatient = patientRepository.findById(id)
                 .orElseThrow(() -> new TuratbekulyAmirPatientNotFoundException(id));
 
-        patient.setFirstName(patientDto.firstName());
-        patient.setLastName(patientDto.lastName());
-        patient.setAge(patientDto.age());
-        patient.setIllness(patientDto.illness());
+        TuratbekulyAmirPatient.setFirstName(patientDto.firstName());
+        TuratbekulyAmirPatient.setLastName(patientDto.lastName());
+        TuratbekulyAmirPatient.setAge(patientDto.age());
+        TuratbekulyAmirPatient.setIllness(patientDto.illness());
 
-        Patient updatedPatient = patientRepository.save(patient);
-        log.info("Updated patient id={} firstName='{}' lastName='{}'", updatedPatient.getId(), updatedPatient.getFirstName(), updatedPatient.getLastName());
+        TuratbekulyAmirPatient updatedPatient = patientRepository.save(TuratbekulyAmirPatient);
+        log.info("Updated TuratbekulyAmirPatient id={} firstName='{}' lastName='{}'", updatedPatient.getId(), updatedPatient.getFirstName(), updatedPatient.getLastName());
         return entityMapper.toPatientDto(updatedPatient);
     }
 
     @Override
     public void deletePatient(Long id) {
         if (!patientRepository.existsById(id)) {
-            log.warn("Attempted to delete non-existing patient id={}", id);
+            log.warn("Attempted to delete non-existing TuratbekulyAmirPatient id={}", id);
             throw new TuratbekulyAmirPatientNotFoundException(id);
         }
 
         patientRepository.deleteById(id);
-        log.info("Deleted patient id={}", id);
+        log.info("Deleted TuratbekulyAmirPatient id={}", id);
     }
 
-    private Specification<Patient> buildPatientSpecification(
+    private Specification<TuratbekulyAmirPatient> buildPatientSpecification(
             String search,
             String firstName,
             String lastName,
@@ -128,7 +128,7 @@ public class TuratbekulyAmirPatientServiceImpl implements TuratbekulyAmirPatient
             Integer minAge,
             Integer maxAge
     ) {
-        Specification<Patient> specification = Specification.where(null);
+        Specification<TuratbekulyAmirPatient> specification = Specification.where(null);
 
         if (StringUtils.hasText(search)) {
             String normalizedSearch = "%" + search.trim().toLowerCase() + "%";

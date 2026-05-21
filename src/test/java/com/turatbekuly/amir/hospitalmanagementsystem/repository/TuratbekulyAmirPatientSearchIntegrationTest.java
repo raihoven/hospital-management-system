@@ -1,8 +1,8 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.repository;
 
-import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPatientDto;
-import com.turatbekuly.amir.hospitalmanagementsystem.entity.Patient;
+import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirPatient;
 import com.turatbekuly.amir.hospitalmanagementsystem.mapper.TuratbekulyAmirEntityMapper;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.impl.TuratbekulyAmirPatientServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,14 +26,14 @@ class TuratbekulyAmirPatientSearchIntegrationTest {
     @BeforeEach
     void setUp() {
         patientRepository.deleteAll();
-        patientRepository.save(new Patient("Amir", "Turatbekuly", 24, "cardiology follow-up"));
-        patientRepository.save(new Patient("Madina", "Aidarova", 31, "neurology"));
-        patientRepository.save(new Patient("Aidar", "Sultanov", 45, "cardiology diagnostics"));
+        patientRepository.save(new TuratbekulyAmirPatient("Amir", "Turatbekuly", 24, "cardiology follow-up"));
+        patientRepository.save(new TuratbekulyAmirPatient("Madina", "Aidarova", 31, "neurology"));
+        patientRepository.save(new TuratbekulyAmirPatient("Aidar", "Sultanov", 45, "cardiology diagnostics"));
     }
 
     @Test
     void searchFindsAcrossNameAndIllnessFields() {
-        PagedResponseDto<TuratbekulyAmirPatientDto> response = patientService.getAllPatients(
+        TuratbekulyAmirPagedResponseDto<TuratbekulyAmirPatientDto> response = patientService.getAllPatients(
                 "cardiology", null, null, null, null, null, 0, 10, "id", "asc"
         );
 
@@ -44,7 +44,7 @@ class TuratbekulyAmirPatientSearchIntegrationTest {
 
     @Test
     void filtersByNamesIllnessAndAgeRange() {
-        PagedResponseDto<TuratbekulyAmirPatientDto> response = patientService.getAllPatients(
+        TuratbekulyAmirPagedResponseDto<TuratbekulyAmirPatientDto> response = patientService.getAllPatients(
                 null, "aid", null, "cardiology", 40, 50, 0, 10, "age", "desc"
         );
 
@@ -54,7 +54,7 @@ class TuratbekulyAmirPatientSearchIntegrationTest {
 
     @Test
     void paginatesAndSortsResults() {
-        PagedResponseDto<TuratbekulyAmirPatientDto> response = patientService.getAllPatients(
+        TuratbekulyAmirPagedResponseDto<TuratbekulyAmirPatientDto> response = patientService.getAllPatients(
                 null, null, null, null, null, null, 0, 2, "age", "desc"
         );
 

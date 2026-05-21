@@ -4,7 +4,7 @@ import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirAsyncDas
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirFileAuditDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPatientAnalyticsDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirSystemSummaryDto;
-import com.turatbekuly.amir.hospitalmanagementsystem.entity.Patient;
+import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirPatient;
 import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirFileResource;
 import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirRole;
 import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirUser;
@@ -54,24 +54,24 @@ public class TuratbekulyAmirAsyncServiceImpl implements TuratbekulyAmirAsyncServ
     @Override
     @Async("turatbekulyAmirTaskExecutor")
     public CompletableFuture<TuratbekulyAmirPatientAnalyticsDto> generatePatientAnalytics() {
-        log.info("Started async patient analytics generation");
-        List<Patient> patients = patientRepository.findAll();
+        log.info("Started async TuratbekulyAmirPatient analytics generation");
+        List<TuratbekulyAmirPatient> patients = patientRepository.findAll();
 
         double averageAge = patients.stream()
-                .mapToInt(Patient::getAge)
+                .mapToInt(TuratbekulyAmirPatient::getAge)
                 .average()
                 .orElse(0.0);
 
         long adultPatients = patients.stream()
-                .filter(patient -> patient.getAge() >= 18)
+                .filter(TuratbekulyAmirPatient -> TuratbekulyAmirPatient.getAge() >= 18)
                 .count();
 
         long minorPatients = patients.stream()
-                .filter(patient -> patient.getAge() < 18)
+                .filter(TuratbekulyAmirPatient -> TuratbekulyAmirPatient.getAge() < 18)
                 .count();
 
         long patientsWithIllness = patients.stream()
-                .filter(patient -> StringUtils.hasText(patient.getIllness()))
+                .filter(TuratbekulyAmirPatient -> StringUtils.hasText(TuratbekulyAmirPatient.getIllness()))
                 .count();
 
         TuratbekulyAmirPatientAnalyticsDto analyticsDto = new TuratbekulyAmirPatientAnalyticsDto(
@@ -82,7 +82,7 @@ public class TuratbekulyAmirAsyncServiceImpl implements TuratbekulyAmirAsyncServ
                 patientsWithIllness
         );
 
-        log.info("Completed async patient analytics generation for {} patients", patients.size());
+        log.info("Completed async TuratbekulyAmirPatient analytics generation for {} patients", patients.size());
         return CompletableFuture.completedFuture(analyticsDto);
     }
 

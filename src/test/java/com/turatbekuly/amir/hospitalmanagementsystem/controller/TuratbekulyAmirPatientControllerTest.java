@@ -1,9 +1,9 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPatientDto;
-import com.turatbekuly.amir.hospitalmanagementsystem.exception.GlobalExceptionHandler;
+import com.turatbekuly.amir.hospitalmanagementsystem.exception.TuratbekulyAmirGlobalExceptionHandler;
 import com.turatbekuly.amir.hospitalmanagementsystem.exception.TuratbekulyAmirPatientNotFoundException;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.TuratbekulyAmirPatientService;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ class TuratbekulyAmirPatientControllerTest {
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new TuratbekulyAmirPatientController(patientService))
-                .setControllerAdvice(new GlobalExceptionHandler())
+                .setControllerAdvice(new TuratbekulyAmirGlobalExceptionHandler())
                 .setValidator(validator)
                 .build();
     }
@@ -49,7 +49,7 @@ class TuratbekulyAmirPatientControllerTest {
     void getAllPatientsPassesSearchFilterAndPaginationParams() throws Exception {
         TuratbekulyAmirPatientDto dto = new TuratbekulyAmirPatientDto(1L, "Amir", "Turatbekuly", 24, "flu");
         when(patientService.getAllPatients("amir", "Am", "Tur", "flu", 18, 65, 2, 5, "age", "desc"))
-                .thenReturn(new PagedResponseDto<>(List.of(dto), 2, 5, 1, 1, true));
+                .thenReturn(new TuratbekulyAmirPagedResponseDto<>(List.of(dto), 2, 5, 1, 1, true));
 
         mockMvc.perform(get("/api/patients")
                         .param("search", "amir")

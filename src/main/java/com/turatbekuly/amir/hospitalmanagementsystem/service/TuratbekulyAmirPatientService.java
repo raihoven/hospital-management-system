@@ -1,12 +1,12 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.service;
 
-import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPatientDto;
 import jakarta.validation.Valid;
 
 public interface TuratbekulyAmirPatientService {
 
-    PagedResponseDto<TuratbekulyAmirPatientDto> getAllPatients(
+    TuratbekulyAmirPagedResponseDto<TuratbekulyAmirPatientDto> getAllPatients(
             String search,
             String firstName,
             String lastName,

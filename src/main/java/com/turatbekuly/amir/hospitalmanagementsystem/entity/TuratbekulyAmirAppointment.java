@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "appointments")
-public class Appointment {
+public class TuratbekulyAmirAppointment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class Appointment {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private AppointmentStatus status = AppointmentStatus.SCHEDULED;
+    private TuratbekulyAmirAppointmentStatus status = TuratbekulyAmirAppointmentStatus.SCHEDULED;
 
     @Size(max = 500, message = "Комментарий к приему не должен превышать 500 символов")
     @Column(length = 500)
@@ -28,21 +28,21 @@ public class Appointment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
-    private Patient patient;
+    private TuratbekulyAmirPatient TuratbekulyAmirPatient;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "doctor_id", nullable = false)
-    private Doctor doctor;
+    private TuratbekulyAmirDoctor TuratbekulyAmirDoctor;
 
-    public Appointment() {
+    public TuratbekulyAmirAppointment() {
     }
 
-    public Appointment(LocalDateTime appointmentDateTime, AppointmentStatus status, String notes, Patient patient, Doctor doctor) {
+    public TuratbekulyAmirAppointment(LocalDateTime appointmentDateTime, TuratbekulyAmirAppointmentStatus status, String notes, TuratbekulyAmirPatient TuratbekulyAmirPatient, TuratbekulyAmirDoctor TuratbekulyAmirDoctor) {
         this.appointmentDateTime = appointmentDateTime;
         this.status = status;
         this.notes = notes;
-        this.patient = patient;
-        this.doctor = doctor;
+        this.TuratbekulyAmirPatient = TuratbekulyAmirPatient;
+        this.TuratbekulyAmirDoctor = TuratbekulyAmirDoctor;
     }
 
     public Long getId() {
@@ -61,11 +61,11 @@ public class Appointment {
         this.appointmentDateTime = appointmentDateTime;
     }
 
-    public AppointmentStatus getStatus() {
+    public TuratbekulyAmirAppointmentStatus getStatus() {
         return status;
     }
 
-    public void setStatus(AppointmentStatus status) {
+    public void setStatus(TuratbekulyAmirAppointmentStatus status) {
         this.status = status;
     }
 
@@ -77,19 +77,19 @@ public class Appointment {
         this.notes = notes;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public TuratbekulyAmirPatient getPatient() {
+        return TuratbekulyAmirPatient;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setPatient(TuratbekulyAmirPatient TuratbekulyAmirPatient) {
+        this.TuratbekulyAmirPatient = TuratbekulyAmirPatient;
     }
 
-    public Doctor getDoctor() {
-        return doctor;
+    public TuratbekulyAmirDoctor getDoctor() {
+        return TuratbekulyAmirDoctor;
     }
 
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
+    public void setDoctor(TuratbekulyAmirDoctor TuratbekulyAmirDoctor) {
+        this.TuratbekulyAmirDoctor = TuratbekulyAmirDoctor;
     }
 }

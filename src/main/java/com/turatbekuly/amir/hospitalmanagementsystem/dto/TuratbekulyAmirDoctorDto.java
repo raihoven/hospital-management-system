@@ -1,6 +1,6 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.dto;
 
-public record DoctorDto(
+public record TuratbekulyAmirDoctorDto(
         Long id,
         String firstName,
         String lastName,

@@ -1,13 +1,13 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.dto;
 
-import com.turatbekuly.amir.hospitalmanagementsystem.entity.AppointmentStatus;
+import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirAppointmentStatus;
 
 import java.time.LocalDateTime;
 
-public record AppointmentDto(
+public record TuratbekulyAmirAppointmentDto(
         Long id,
         LocalDateTime appointmentDateTime,
-        AppointmentStatus status,
+        TuratbekulyAmirAppointmentStatus status,
         String notes,
         Long patientId,
         Long doctorId

@@ -2,7 +2,7 @@ package com.turatbekuly.amir.hospitalmanagementsystem.dto;
 
 import java.util.List;
 
-public record PagedResponseDto<T>(
+public record TuratbekulyAmirPagedResponseDto<T>(
         List<T> content,
         int page,
         int size,

@@ -23,16 +23,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class TuratbekulyAmirGlobalExceptionHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(TuratbekulyAmirGlobalExceptionHandler.class);
 
     @ExceptionHandler(TuratbekulyAmirPatientNotFoundException.class)
     public ResponseEntity<TuratbekulyAmirApiErrorResponse> handlePatientNotFound(
             TuratbekulyAmirPatientNotFoundException exception,
             HttpServletRequest request
     ) {
-        log.warn("Patient not found: path={} message={}", request.getRequestURI(), exception.getMessage());
+        log.warn("TuratbekulyAmirPatient not found: path={} message={}", request.getRequestURI(), exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(buildErrorResponse(HttpStatus.NOT_FOUND, exception.getMessage(), request.getRequestURI()));
     }

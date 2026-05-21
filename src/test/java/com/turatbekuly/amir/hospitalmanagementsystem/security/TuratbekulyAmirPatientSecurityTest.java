@@ -2,7 +2,7 @@ package com.turatbekuly.amir.hospitalmanagementsystem.security;
 
 import com.turatbekuly.amir.hospitalmanagementsystem.config.TuratbekulyAmirSecurityConfig;
 import com.turatbekuly.amir.hospitalmanagementsystem.controller.TuratbekulyAmirPatientController;
-import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.TuratbekulyAmirPatientService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ class TuratbekulyAmirPatientSecurityTest {
     @WithMockUser(roles = "USER")
     void userCanReadPatients() throws Exception {
         when(patientService.getAllPatients(any(), any(), any(), any(), any(), any(), anyInt(), anyInt(), any(), any()))
-                .thenReturn(new PagedResponseDto<>(List.of(), 0, 10, 0, 0, true));
+                .thenReturn(new TuratbekulyAmirPagedResponseDto<>(List.of(), 0, 10, 0, 0, true));
 
         mockMvc.perform(get("/api/patients"))
                 .andExpect(status().isOk());
