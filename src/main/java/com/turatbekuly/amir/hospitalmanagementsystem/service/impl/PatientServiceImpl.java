@@ -6,7 +6,9 @@ import com.turatbekuly.amir.hospitalmanagementsystem.exception.PatientNotFoundEx
 import com.turatbekuly.amir.hospitalmanagementsystem.repository.PatientRepository;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.PatientService;
 import jakarta.validation.Valid;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -22,8 +24,8 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<PatientDto> getAllPatients() {
-        return patientRepository.findAll()
+    public List<PatientDto> getAllPatients(String firstName, String lastName, String illness) {
+        return patientRepository.findAll(buildPatientSpecification(firstName, lastName, illness))
                 .stream()
                 .map(this::toDto)
                 .toList();
@@ -64,6 +66,33 @@ public class PatientServiceImpl implements PatientService {
 
         patientRepository.deleteById(id);
         return true;
+    }
+
+    private Specification<Patient> buildPatientSpecification(String firstName, String lastName, String illness) {
+        Specification<Patient> specification = Specification.where(null);
+
+        if (StringUtils.hasText(firstName)) {
+            String normalizedFirstName = "%" + firstName.trim().toLowerCase() + "%";
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), normalizedFirstName)
+            );
+        }
+
+        if (StringUtils.hasText(lastName)) {
+            String normalizedLastName = "%" + lastName.trim().toLowerCase() + "%";
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), normalizedLastName)
+            );
+        }
+
+        if (StringUtils.hasText(illness)) {
+            String normalizedIllness = "%" + illness.trim().toLowerCase() + "%";
+            specification = specification.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("illness")), normalizedIllness)
+            );
+        }
+
+        return specification;
     }
 
     private PatientDto toDto(Patient patient) {

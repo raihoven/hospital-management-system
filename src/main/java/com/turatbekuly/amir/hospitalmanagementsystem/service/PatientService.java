@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface PatientService {
 
-    List<PatientDto> getAllPatients();
+    List<PatientDto> getAllPatients(String firstName, String lastName, String illness);
 
     PatientDto createPatient(@Valid PatientDto patientDto);
 

@@ -20,8 +20,12 @@ public class PatientController {
     }
 
     @GetMapping
-    public List<PatientDto> getAllPatients() {
-        return patientService.getAllPatients();
+    public List<PatientDto> getAllPatients(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String illness
+    ) {
+        return patientService.getAllPatients(firstName, lastName, illness);
     }
 
     @PostMapping
