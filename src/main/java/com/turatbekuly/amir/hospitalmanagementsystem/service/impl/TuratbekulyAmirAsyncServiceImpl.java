@@ -1,0 +1,145 @@
+package com.turatbekuly.amir.hospitalmanagementsystem.service.impl;
+
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirAsyncDashboardDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirFileAuditDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirPatientAnalyticsDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirSystemSummaryDto;
+import com.turatbekuly.amir.hospitalmanagementsystem.entity.Patient;
+import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirFileResource;
+import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirRole;
+import com.turatbekuly.amir.hospitalmanagementsystem.entity.TuratbekulyAmirUser;
+import com.turatbekuly.amir.hospitalmanagementsystem.repository.PatientRepository;
+import com.turatbekuly.amir.hospitalmanagementsystem.repository.TuratbekulyAmirFileResourceRepository;
+import com.turatbekuly.amir.hospitalmanagementsystem.repository.TuratbekulyAmirUserRepository;
+import com.turatbekuly.amir.hospitalmanagementsystem.service.TuratbekulyAmirAsyncService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+@Service
+public class TuratbekulyAmirAsyncServiceImpl implements TuratbekulyAmirAsyncService {
+
+    private final PatientRepository patientRepository;
+    private final TuratbekulyAmirUserRepository userRepository;
+    private final TuratbekulyAmirFileResourceRepository fileResourceRepository;
+    private final TuratbekulyAmirAsyncService asyncServiceProxy;
+    private final String storagePath;
+
+    public TuratbekulyAmirAsyncServiceImpl(
+            PatientRepository patientRepository,
+            TuratbekulyAmirUserRepository userRepository,
+            TuratbekulyAmirFileResourceRepository fileResourceRepository,
+            @Lazy TuratbekulyAmirAsyncService asyncServiceProxy,
+            @Value("${app.file.storage.path}") String storagePath
+    ) {
+        this.patientRepository = patientRepository;
+        this.userRepository = userRepository;
+        this.fileResourceRepository = fileResourceRepository;
+        this.asyncServiceProxy = asyncServiceProxy;
+        this.storagePath = storagePath;
+    }
+
+    @Override
+    @Async("turatbekulyAmirTaskExecutor")
+    public CompletableFuture<TuratbekulyAmirPatientAnalyticsDto> generatePatientAnalytics() {
+        List<Patient> patients = patientRepository.findAll();
+
+        double averageAge = patients.stream()
+                .mapToInt(Patient::getAge)
+                .average()
+                .orElse(0.0);
+
+        long adultPatients = patients.stream()
+                .filter(patient -> patient.getAge() >= 18)
+                .count();
+
+        long minorPatients = patients.stream()
+                .filter(patient -> patient.getAge() < 18)
+                .count();
+
+        long patientsWithIllness = patients.stream()
+                .filter(patient -> StringUtils.hasText(patient.getIllness()))
+                .count();
+
+        TuratbekulyAmirPatientAnalyticsDto analyticsDto = new TuratbekulyAmirPatientAnalyticsDto(
+                patients.size(),
+                averageAge,
+                adultPatients,
+                minorPatients,
+                patientsWithIllness
+        );
+
+        return CompletableFuture.completedFuture(analyticsDto);
+    }
+
+    @Override
+    @Async("turatbekulyAmirTaskExecutor")
+    public CompletableFuture<TuratbekulyAmirFileAuditDto> runFileStorageAudit() {
+        List<TuratbekulyAmirFileResource> files = fileResourceRepository.findAll();
+
+        long availableFiles = files.stream()
+                .filter(file -> Files.exists(Paths.get(file.getFilePath())))
+                .count();
+
+        long missingFiles = files.size() - availableFiles;
+
+        long totalSizeBytes = files.stream()
+                .map(TuratbekulyAmirFileResource::getSize)
+                .filter(size -> size != null)
+                .mapToLong(Long::longValue)
+                .sum();
+
+        TuratbekulyAmirFileAuditDto auditDto = new TuratbekulyAmirFileAuditDto(
+                files.size(),
+                availableFiles,
+                missingFiles,
+                totalSizeBytes,
+                Path.of(storagePath).toAbsolutePath().normalize().toString()
+        );
+
+        return CompletableFuture.completedFuture(auditDto);
+    }
+
+    @Override
+    @Async("turatbekulyAmirTaskExecutor")
+    public CompletableFuture<TuratbekulyAmirSystemSummaryDto> buildSystemSummary() {
+        List<TuratbekulyAmirUser> users = userRepository.findAll();
+        long totalAdmins = users.stream()
+                .filter(user -> user.getRole() == TuratbekulyAmirRole.ROLE_ADMIN)
+                .count();
+
+        TuratbekulyAmirSystemSummaryDto summaryDto = new TuratbekulyAmirSystemSummaryDto(
+                users.size(),
+                totalAdmins,
+                patientRepository.count(),
+                fileResourceRepository.count(),
+                LocalDateTime.now()
+        );
+
+        return CompletableFuture.completedFuture(summaryDto);
+    }
+
+    @Override
+    public CompletableFuture<TuratbekulyAmirAsyncDashboardDto> buildDashboardSummary() {
+        CompletableFuture<TuratbekulyAmirPatientAnalyticsDto> patientAnalyticsFuture = asyncServiceProxy.generatePatientAnalytics();
+        CompletableFuture<TuratbekulyAmirFileAuditDto> fileAuditFuture = asyncServiceProxy.runFileStorageAudit();
+        CompletableFuture<TuratbekulyAmirSystemSummaryDto> systemSummaryFuture = asyncServiceProxy.buildSystemSummary();
+
+        return CompletableFuture.allOf(patientAnalyticsFuture, fileAuditFuture, systemSummaryFuture)
+                .thenApply(unused -> new TuratbekulyAmirAsyncDashboardDto(
+                        patientAnalyticsFuture.join(),
+                        fileAuditFuture.join(),
+                        systemSummaryFuture.join(),
+                        LocalDateTime.now()
+                ));
+    }
+}

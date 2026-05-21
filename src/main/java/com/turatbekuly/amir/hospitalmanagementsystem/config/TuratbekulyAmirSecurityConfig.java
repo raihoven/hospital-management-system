@@ -51,6 +51,7 @@ public class TuratbekulyAmirSecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/error").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/async/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/files/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/files/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/patients/**").hasAnyRole("USER", "ADMIN")
