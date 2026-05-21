@@ -1,17 +1,19 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.service;
 
-import com.turatbekuly.amir.hospitalmanagementsystem.entity.Patient;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.PatientDto;
 import jakarta.validation.Valid;
 
 import java.util.List;
 
 public interface PatientService {
 
-    List<Patient> getAllPatients();
+    List<PatientDto> getAllPatients();
 
-    Patient createPatient(@Valid Patient patient);
+    PatientDto createPatient(@Valid PatientDto patientDto);
 
-    Patient getPatientById(Long id);
+    PatientDto getPatientById(Long id);
+
+    PatientDto updatePatient(Long id, @Valid PatientDto patientDto);
 
     boolean deletePatient(Long id);
 }

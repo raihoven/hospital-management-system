@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "patients")
 public class Patient {
@@ -26,6 +29,15 @@ public class Patient {
     private int age;
 
     private String illness;
+
+    @OneToMany(mappedBy = "patient")
+    private List<Appointment> appointments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "patient")
+    private List<MedicalRecord> medicalRecords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "patient")
+    private List<Prescription> prescriptions = new ArrayList<>();
 
     // Пустой конструктор (обязателен для Spring и JPA)
     public Patient() {
@@ -55,4 +67,13 @@ public class Patient {
 
     public String getIllness() { return illness; }
     public void setIllness(String illness) { this.illness = illness; }
+
+    public List<Appointment> getAppointments() { return appointments; }
+    public void setAppointments(List<Appointment> appointments) { this.appointments = appointments; }
+
+    public List<MedicalRecord> getMedicalRecords() { return medicalRecords; }
+    public void setMedicalRecords(List<MedicalRecord> medicalRecords) { this.medicalRecords = medicalRecords; }
+
+    public List<Prescription> getPrescriptions() { return prescriptions; }
+    public void setPrescriptions(List<Prescription> prescriptions) { this.prescriptions = prescriptions; }
 }

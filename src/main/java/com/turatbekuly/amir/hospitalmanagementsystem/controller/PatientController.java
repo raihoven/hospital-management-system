@@ -1,7 +1,8 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.controller;
 
-import com.turatbekuly.amir.hospitalmanagementsystem.entity.Patient;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.PatientDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.PatientService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,18 +20,23 @@ public class PatientController {
     }
 
     @GetMapping
-    public List<Patient> getAllPatients() {
+    public List<PatientDto> getAllPatients() {
         return patientService.getAllPatients();
     }
 
     @PostMapping
-    public Patient createPatient(@RequestBody Patient patient) {
-        return patientService.createPatient(patient);
+    public PatientDto createPatient(@Valid @RequestBody PatientDto patientDto) {
+        return patientService.createPatient(patientDto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
+    public ResponseEntity<PatientDto> getPatientById(@PathVariable Long id) {
         return ResponseEntity.ok(patientService.getPatientById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PatientDto> updatePatient(@PathVariable Long id, @Valid @RequestBody PatientDto patientDto) {
+        return ResponseEntity.ok(patientService.updatePatient(id, patientDto));
     }
 
     @DeleteMapping("/{id}")
