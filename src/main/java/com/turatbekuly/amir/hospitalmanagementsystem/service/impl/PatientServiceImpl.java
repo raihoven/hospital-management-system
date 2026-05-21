@@ -4,6 +4,7 @@ import com.turatbekuly.amir.hospitalmanagementsystem.dto.PagedResponseDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.dto.PatientDto;
 import com.turatbekuly.amir.hospitalmanagementsystem.entity.Patient;
 import com.turatbekuly.amir.hospitalmanagementsystem.exception.PatientNotFoundException;
+import com.turatbekuly.amir.hospitalmanagementsystem.mapper.TuratbekulyAmirEntityMapper;
 import com.turatbekuly.amir.hospitalmanagementsystem.repository.PatientRepository;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.PatientService;
 import jakarta.validation.Valid;
@@ -28,9 +29,11 @@ public class PatientServiceImpl implements PatientService {
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "firstName", "lastName", "age", "illness");
 
     private final PatientRepository patientRepository;
+    private final TuratbekulyAmirEntityMapper entityMapper;
 
-    public PatientServiceImpl(PatientRepository patientRepository) {
+    public PatientServiceImpl(PatientRepository patientRepository, TuratbekulyAmirEntityMapper entityMapper) {
         this.patientRepository = patientRepository;
+        this.entityMapper = entityMapper;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class PatientServiceImpl implements PatientService {
 
         Page<PatientDto> patientPage = patientRepository
                 .findAll(buildPatientSpecification(search, firstName, lastName, illness, minAge, maxAge), pageable)
-                .map(this::toDto);
+                .map(entityMapper::toPatientDto);
 
         log.info("Fetched patient page {} with {} elements out of total {}", patientPage.getNumber(), patientPage.getNumberOfElements(), patientPage.getTotalElements());
 
@@ -75,9 +78,9 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public PatientDto createPatient(@Valid PatientDto patientDto) {
-        Patient savedPatient = patientRepository.save(toEntity(patientDto));
+        Patient savedPatient = patientRepository.save(entityMapper.toPatientEntity(patientDto));
         log.info("Created patient id={} firstName='{}' lastName='{}'", savedPatient.getId(), savedPatient.getFirstName(), savedPatient.getLastName());
-        return toDto(savedPatient);
+        return entityMapper.toPatientDto(savedPatient);
     }
 
     @Override
@@ -85,7 +88,7 @@ public class PatientServiceImpl implements PatientService {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new PatientNotFoundException(id));
         log.info("Fetched patient by id={}", id);
-        return toDto(patient);
+        return entityMapper.toPatientDto(patient);
     }
 
     @Override
@@ -100,7 +103,7 @@ public class PatientServiceImpl implements PatientService {
 
         Patient updatedPatient = patientRepository.save(patient);
         log.info("Updated patient id={} firstName='{}' lastName='{}'", updatedPatient.getId(), updatedPatient.getFirstName(), updatedPatient.getLastName());
-        return toDto(updatedPatient);
+        return entityMapper.toPatientDto(updatedPatient);
     }
 
     @Override
@@ -189,22 +192,4 @@ public class PatientServiceImpl implements PatientService {
         return Math.min(size, 100);
     }
 
-    private PatientDto toDto(Patient patient) {
-        return new PatientDto(
-                patient.getId(),
-                patient.getFirstName(),
-                patient.getLastName(),
-                patient.getAge(),
-                patient.getIllness()
-        );
-    }
-
-    private Patient toEntity(PatientDto patientDto) {
-        Patient patient = new Patient();
-        patient.setFirstName(patientDto.firstName());
-        patient.setLastName(patientDto.lastName());
-        patient.setAge(patientDto.age());
-        patient.setIllness(patientDto.illness());
-        return patient;
-    }
 }

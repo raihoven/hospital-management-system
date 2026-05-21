@@ -1,6 +1,7 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirApiErrorResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,8 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Component
 public class TuratbekulyAmirAuthenticationEntryPoint implements AuthenticationEntryPoint {
@@ -30,12 +29,13 @@ public class TuratbekulyAmirAuthenticationEntryPoint implements AuthenticationEn
             HttpServletResponse response,
             AuthenticationException authException
     ) throws IOException, ServletException {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.UNAUTHORIZED.value());
-        body.put("error", "Unauthorized");
-        body.put("message", "Требуется аутентификация");
-        body.put("path", request.getRequestURI());
+        TuratbekulyAmirApiErrorResponse body = new TuratbekulyAmirApiErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                "Требуется аутентификация",
+                request.getRequestURI()
+        );
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

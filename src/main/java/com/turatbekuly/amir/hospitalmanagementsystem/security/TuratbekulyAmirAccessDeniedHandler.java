@@ -1,6 +1,7 @@
 package com.turatbekuly.amir.hospitalmanagementsystem.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.turatbekuly.amir.hospitalmanagementsystem.dto.TuratbekulyAmirApiErrorResponse;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,8 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Component
 public class TuratbekulyAmirAccessDeniedHandler implements AccessDeniedHandler {
@@ -30,12 +29,13 @@ public class TuratbekulyAmirAccessDeniedHandler implements AccessDeniedHandler {
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) throws IOException, ServletException {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.FORBIDDEN.value());
-        body.put("error", "Forbidden");
-        body.put("message", "Недостаточно прав для выполнения операции");
-        body.put("path", request.getRequestURI());
+        TuratbekulyAmirApiErrorResponse body = new TuratbekulyAmirApiErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.FORBIDDEN.getReasonPhrase(),
+                "Недостаточно прав для выполнения операции",
+                request.getRequestURI()
+        );
 
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
