@@ -7,6 +7,8 @@ import com.turatbekuly.amir.hospitalmanagementsystem.exception.PatientNotFoundEx
 import com.turatbekuly.amir.hospitalmanagementsystem.repository.PatientRepository;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.PatientService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import java.util.Set;
 @Validated
 public class PatientServiceImpl implements PatientService {
 
+    private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("id", "firstName", "lastName", "age", "illness");
 
     private final PatientRepository patientRepository;
@@ -43,6 +46,11 @@ public class PatientServiceImpl implements PatientService {
             String sortBy,
             String sortDir
     ) {
+        log.info(
+                "Fetching patients with search='{}', firstName='{}', lastName='{}', illness='{}', minAge={}, maxAge={}, page={}, size={}, sortBy='{}', sortDir='{}'",
+                search, firstName, lastName, illness, minAge, maxAge, page, size, sortBy, sortDir
+        );
+
         Pageable pageable = PageRequest.of(
                 normalizePage(page),
                 normalizeSize(size),
@@ -52,6 +60,8 @@ public class PatientServiceImpl implements PatientService {
         Page<PatientDto> patientPage = patientRepository
                 .findAll(buildPatientSpecification(search, firstName, lastName, illness, minAge, maxAge), pageable)
                 .map(this::toDto);
+
+        log.info("Fetched patient page {} with {} elements out of total {}", patientPage.getNumber(), patientPage.getNumberOfElements(), patientPage.getTotalElements());
 
         return new PagedResponseDto<>(
                 patientPage.getContent(),
@@ -66,6 +76,7 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public PatientDto createPatient(@Valid PatientDto patientDto) {
         Patient savedPatient = patientRepository.save(toEntity(patientDto));
+        log.info("Created patient id={} firstName='{}' lastName='{}'", savedPatient.getId(), savedPatient.getFirstName(), savedPatient.getLastName());
         return toDto(savedPatient);
     }
 
@@ -73,6 +84,7 @@ public class PatientServiceImpl implements PatientService {
     public PatientDto getPatientById(Long id) {
         Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new PatientNotFoundException(id));
+        log.info("Fetched patient by id={}", id);
         return toDto(patient);
     }
 
@@ -87,16 +99,19 @@ public class PatientServiceImpl implements PatientService {
         patient.setIllness(patientDto.illness());
 
         Patient updatedPatient = patientRepository.save(patient);
+        log.info("Updated patient id={} firstName='{}' lastName='{}'", updatedPatient.getId(), updatedPatient.getFirstName(), updatedPatient.getLastName());
         return toDto(updatedPatient);
     }
 
     @Override
     public boolean deletePatient(Long id) {
         if (!patientRepository.existsById(id)) {
+            log.warn("Attempted to delete non-existing patient id={}", id);
             return false;
         }
 
         patientRepository.deleteById(id);
+        log.info("Deleted patient id={}", id);
         return true;
     }
 

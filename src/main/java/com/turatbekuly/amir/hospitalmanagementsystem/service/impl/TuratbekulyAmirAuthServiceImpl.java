@@ -9,6 +9,8 @@ import com.turatbekuly.amir.hospitalmanagementsystem.exception.TuratbekulyAmirUs
 import com.turatbekuly.amir.hospitalmanagementsystem.repository.TuratbekulyAmirUserRepository;
 import com.turatbekuly.amir.hospitalmanagementsystem.security.TuratbekulyAmirJwtService;
 import com.turatbekuly.amir.hospitalmanagementsystem.service.TuratbekulyAmirAuthService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TuratbekulyAmirAuthServiceImpl implements TuratbekulyAmirAuthService {
 
+    private static final Logger log = LoggerFactory.getLogger(TuratbekulyAmirAuthServiceImpl.class);
     private final TuratbekulyAmirUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TuratbekulyAmirJwtService jwtService;
@@ -37,6 +40,7 @@ public class TuratbekulyAmirAuthServiceImpl implements TuratbekulyAmirAuthServic
     @Override
     public TuratbekulyAmirAuthResponse register(TuratbekulyAmirRegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
+            log.warn("Registration rejected for existing email={}", request.email());
             throw new TuratbekulyAmirUserAlreadyExistsException(request.email());
         }
 
@@ -50,11 +54,13 @@ public class TuratbekulyAmirAuthServiceImpl implements TuratbekulyAmirAuthServic
 
         TuratbekulyAmirUser savedUser = userRepository.save(user);
         String token = jwtService.generateToken(savedUser);
+        log.info("Registered new user email={} role={}", savedUser.getEmail(), savedUser.getRole());
         return new TuratbekulyAmirAuthResponse(token, "Bearer", savedUser.getEmail(), savedUser.getRole().name());
     }
 
     @Override
     public TuratbekulyAmirAuthResponse login(TuratbekulyAmirLoginRequest request) {
+        log.info("Authentication attempt for email={}", request.email());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
@@ -63,6 +69,7 @@ public class TuratbekulyAmirAuthServiceImpl implements TuratbekulyAmirAuthServic
                 .orElseThrow(() -> new IllegalStateException("Пользователь не найден после аутентификации"));
 
         String token = jwtService.generateToken(user);
+        log.info("Authentication successful for email={} role={}", user.getEmail(), user.getRole());
         return new TuratbekulyAmirAuthResponse(token, "Bearer", user.getEmail(), user.getRole().name());
     }
 }

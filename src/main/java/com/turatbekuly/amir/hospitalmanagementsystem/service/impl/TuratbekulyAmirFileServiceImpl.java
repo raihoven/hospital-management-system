@@ -10,6 +10,8 @@ import com.turatbekuly.amir.hospitalmanagementsystem.service.TuratbekulyAmirFile
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +28,7 @@ import java.util.UUID;
 @Service
 public class TuratbekulyAmirFileServiceImpl implements TuratbekulyAmirFileService {
 
+    private static final Logger log = LoggerFactory.getLogger(TuratbekulyAmirFileServiceImpl.class);
     private final TuratbekulyAmirFileResourceRepository fileResourceRepository;
     private final Path storageLocation;
 
@@ -65,6 +68,13 @@ public class TuratbekulyAmirFileServiceImpl implements TuratbekulyAmirFileServic
         fileResource.setFilePath(targetLocation.toString());
 
         TuratbekulyAmirFileResource savedFile = fileResourceRepository.save(fileResource);
+        log.info(
+                "Uploaded file id={} originalName='{}' storedName='{}' size={} bytes",
+                savedFile.getId(),
+                savedFile.getOriginalFileName(),
+                savedFile.getStoredFileName(),
+                savedFile.getSize()
+        );
         return toDto(savedFile);
     }
 
@@ -81,6 +91,7 @@ public class TuratbekulyAmirFileServiceImpl implements TuratbekulyAmirFileServic
                 throw new TuratbekulyAmirFileNotFoundException(id);
             }
 
+            log.info("Prepared file download id={} originalName='{}'", id, fileResource.getOriginalFileName());
             return new TuratbekulyAmirFileDownloadDto(
                     fileResource.getOriginalFileName(),
                     fileResource.getContentType(),
@@ -95,20 +106,24 @@ public class TuratbekulyAmirFileServiceImpl implements TuratbekulyAmirFileServic
     public TuratbekulyAmirFileDto getFileMetadata(Long id) {
         TuratbekulyAmirFileResource fileResource = fileResourceRepository.findById(id)
                 .orElseThrow(() -> new TuratbekulyAmirFileNotFoundException(id));
+        log.info("Fetched file metadata id={} originalName='{}'", id, fileResource.getOriginalFileName());
         return toDto(fileResource);
     }
 
     @Override
     public List<TuratbekulyAmirFileDto> getAllFiles() {
-        return fileResourceRepository.findAll()
+        List<TuratbekulyAmirFileDto> files = fileResourceRepository.findAll()
                 .stream()
                 .map(this::toDto)
                 .toList();
+        log.info("Fetched file list size={}", files.size());
+        return files;
     }
 
     private void initStorage() {
         try {
             Files.createDirectories(storageLocation);
+            log.info("Initialized file storage at {}", storageLocation);
         } catch (IOException exception) {
             throw new TuratbekulyAmirFileStorageException("Не удалось создать директорию для хранения файлов", exception);
         }

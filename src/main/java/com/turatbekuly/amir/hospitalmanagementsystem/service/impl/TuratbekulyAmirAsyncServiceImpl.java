@@ -14,6 +14,8 @@ import com.turatbekuly.amir.hospitalmanagementsystem.repository.TuratbekulyAmirU
 import com.turatbekuly.amir.hospitalmanagementsystem.service.TuratbekulyAmirAsyncService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -28,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class TuratbekulyAmirAsyncServiceImpl implements TuratbekulyAmirAsyncService {
 
+    private static final Logger log = LoggerFactory.getLogger(TuratbekulyAmirAsyncServiceImpl.class);
     private final PatientRepository patientRepository;
     private final TuratbekulyAmirUserRepository userRepository;
     private final TuratbekulyAmirFileResourceRepository fileResourceRepository;
@@ -51,6 +54,7 @@ public class TuratbekulyAmirAsyncServiceImpl implements TuratbekulyAmirAsyncServ
     @Override
     @Async("turatbekulyAmirTaskExecutor")
     public CompletableFuture<TuratbekulyAmirPatientAnalyticsDto> generatePatientAnalytics() {
+        log.info("Started async patient analytics generation");
         List<Patient> patients = patientRepository.findAll();
 
         double averageAge = patients.stream()
@@ -78,12 +82,14 @@ public class TuratbekulyAmirAsyncServiceImpl implements TuratbekulyAmirAsyncServ
                 patientsWithIllness
         );
 
+        log.info("Completed async patient analytics generation for {} patients", patients.size());
         return CompletableFuture.completedFuture(analyticsDto);
     }
 
     @Override
     @Async("turatbekulyAmirTaskExecutor")
     public CompletableFuture<TuratbekulyAmirFileAuditDto> runFileStorageAudit() {
+        log.info("Started async file storage audit");
         List<TuratbekulyAmirFileResource> files = fileResourceRepository.findAll();
 
         long availableFiles = files.stream()
@@ -106,12 +112,14 @@ public class TuratbekulyAmirAsyncServiceImpl implements TuratbekulyAmirAsyncServ
                 Path.of(storagePath).toAbsolutePath().normalize().toString()
         );
 
+        log.info("Completed async file storage audit: totalFiles={} availableFiles={} missingFiles={}", files.size(), availableFiles, missingFiles);
         return CompletableFuture.completedFuture(auditDto);
     }
 
     @Override
     @Async("turatbekulyAmirTaskExecutor")
     public CompletableFuture<TuratbekulyAmirSystemSummaryDto> buildSystemSummary() {
+        log.info("Started async system summary build");
         List<TuratbekulyAmirUser> users = userRepository.findAll();
         long totalAdmins = users.stream()
                 .filter(user -> user.getRole() == TuratbekulyAmirRole.ROLE_ADMIN)
@@ -125,11 +133,13 @@ public class TuratbekulyAmirAsyncServiceImpl implements TuratbekulyAmirAsyncServ
                 LocalDateTime.now()
         );
 
+        log.info("Completed async system summary build: users={} admins={} patients={} files={}", users.size(), totalAdmins, summaryDto.totalPatients(), summaryDto.totalFiles());
         return CompletableFuture.completedFuture(summaryDto);
     }
 
     @Override
     public CompletableFuture<TuratbekulyAmirAsyncDashboardDto> buildDashboardSummary() {
+        log.info("Started async dashboard summary aggregation");
         CompletableFuture<TuratbekulyAmirPatientAnalyticsDto> patientAnalyticsFuture = asyncServiceProxy.generatePatientAnalytics();
         CompletableFuture<TuratbekulyAmirFileAuditDto> fileAuditFuture = asyncServiceProxy.runFileStorageAudit();
         CompletableFuture<TuratbekulyAmirSystemSummaryDto> systemSummaryFuture = asyncServiceProxy.buildSystemSummary();
@@ -140,6 +150,13 @@ public class TuratbekulyAmirAsyncServiceImpl implements TuratbekulyAmirAsyncServ
                         fileAuditFuture.join(),
                         systemSummaryFuture.join(),
                         LocalDateTime.now()
-                ));
+                ))
+                .whenComplete((result, throwable) -> {
+                    if (throwable == null) {
+                        log.info("Completed async dashboard summary aggregation");
+                    } else {
+                        log.error("Async dashboard summary aggregation failed", throwable);
+                    }
+                });
     }
 }
